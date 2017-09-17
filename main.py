@@ -191,6 +191,7 @@ def main():
     #     route2 = str(point1) + '->' + str(2)
     #     if route2 in route_od_dict: sum_zone_12 += route_od_dict[route2]
     # print sum_zone_12
+    # 16724.8
 
     # sum_zone_23 = 0
     # for point2 in zone_2_list:
@@ -240,7 +241,7 @@ def main():
     #     route2 = str(point1) + '->' + str(3)
     #     if route2 in route_od_dict: sum_zone_14 += route_od_dict[route2]
     # print sum_zone_14
-    #31964.898
+    # 31964.898
 
     # sum_zone_43 = 0
     # for point4 in zone_4_list:
@@ -267,47 +268,116 @@ def main():
     # print sum_zone_43
     # 19210.205
 
-    time.sleep(1000)
+    # time.sleep(1000)
 
-    level2_list = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
+    # level2_list = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
+    # for level2 in level2_list:
+    #     level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
+    #     ax.add_patch(level2_cir)
+    #     level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
+    #     ax.add_patch(level2_scope_cir)
+    # print 'zone 1', level2_list
+    #
+    # level2_list = annealing(zone_2_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[2], zone_y_dict[2], centroid2_x, centroid2_y)
+    # for level2 in level2_list:
+    #     level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
+    #     ax.add_patch(level2_cir)
+    #     level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
+    #     ax.add_patch(level2_scope_cir)
+    # print 'zone 2', level2_list
+    #
+    # level2_list = annealing(zone_3_list, 9, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[3], zone_y_dict[3], centroid3_x, centroid3_y)
+    # for level2 in level2_list:
+    #     level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
+    #     ax.add_patch(level2_cir)
+    #     level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
+    #     ax.add_patch(level2_scope_cir)
+    # print 'zone 3', level2_list
+    #
+    # level2_list = annealing(zone_4_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[4], zone_y_dict[4], centroid4_x, centroid4_y)
+    # for level2 in level2_list:
+    #     level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
+    #     ax.add_patch(level2_cir)
+    #     level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
+    #     ax.add_patch(level2_scope_cir)
+    # print 'zone 4', level2_list
+    #
+    # centroid_scope_cir = Circle(xy=(centroid1_x, centroid1_y), radius=3000, alpha=0.2)
+    # ax.add_patch(centroid_scope_cir)
+    # centroid_scope_cir = Circle(xy=(centroid2_x, centroid2_y), radius=3000, alpha=0.2)
+    # ax.add_patch(centroid_scope_cir)
+    # centroid_scope_cir = Circle(xy=(centroid3_x, centroid3_y), radius=3000, alpha=0.2)
+    # ax.add_patch(centroid_scope_cir)
+    # centroid_scope_cir = Circle(xy=(centroid4_x, centroid4_y), radius=3000, alpha=0.2)
+    # ax.add_patch(centroid_scope_cir)
+    # plt.show()
+
+# zone 1 [830, 800, 833, 818, 811, 814]
+# zone 2 [812, 805, 824, 829, 838]
+# zone 3 [893, 896, 898, 873, 870, 900, 891, 899, 876]
+# zone 4 [861, 868, 858, 844, 846]
+    minimize_total_length([830, 800, 833, 818, 811, 814], zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
+
+def distance(point1_x, point1_y, point2_x, point2_y):
+    return ((point1_x-point2_x)**2 + (point1_y-point2_y)**2)**0.5
+
+def minimize_total_length(level2_list,  zone_x_dict, zone_y_dict, centroid_x, centroid_y):
+    edge_length_dict = {}
     for level2 in level2_list:
-        level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
-        ax.add_patch(level2_cir)
-        level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
-        ax.add_patch(level2_scope_cir)
+        edge_length_dict['center->'+str(level2)] = distance(zone_x_dict[level2], zone_y_dict[level2], centroid_x, centroid_y)
+    for start in level2_list:
+        for end in level2_list:
+            if start != end and str(end)+'->'+str(start) not in edge_length_dict:
+                edge_length_dict[str(start)+'->'+str(end)] = distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
+    edge_list = sorted(edge_length_dict.keys(), key=lambda x:edge_length_dict[x])
+    for e in edge_list:
+        print e, edge_length_dict[e]
+    graph = {str(k):[] for k in level2_list+['center']}
+    while not isConnected(graph) and edge_list:
+        min_edge = edge_list[0]
+        start, end = min_edge.split('->')
+        if hasLoop(graph, start, end):
+            edge_list.pop(0)
+        else:
+            edge_list.pop(0)
+            graph[start].append(end)
+            graph[end].append(start)
+    return graph
 
-    level2_list = annealing(zone_2_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[2], zone_y_dict[2], centroid2_x, centroid2_y)
-    for level2 in level2_list:
-        level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
-        ax.add_patch(level2_cir)
-        level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
-        ax.add_patch(level2_scope_cir)
+def hasloop_dfs(start, graph, edge_start, edge_end, visited):
+    flag = 0
+    for next in graph[start]:
+        if next not in visited:
+            # print next, edge_end
+            if next == edge_end:
+                flag = 1
+                return flag
+            else:
+                visited.append(next)
+                flag = hasloop_dfs(next, graph, edge_start, edge_end, visited)
+    return flag
 
-    level2_list = annealing(zone_3_list, 9, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[3], zone_y_dict[3], centroid3_x, centroid3_y)
-    for level2 in level2_list:
-        level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
-        ax.add_patch(level2_cir)
-        level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
-        ax.add_patch(level2_scope_cir)
+def hasLoop(graph, edge_start, edge_end):
+    # print graph, edge_start, edge_end
+    visited = [edge_start]
+    return hasloop_dfs(edge_start, graph, edge_start, edge_end, visited)
+    # print has_loop
+    # return True if has_loop else False
 
-    level2_list = annealing(zone_4_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[4], zone_y_dict[4], centroid4_x, centroid4_y)
-    for level2 in level2_list:
-        level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
-        ax.add_patch(level2_cir)
-        level2_scope_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=3000, alpha=0.2)
-        ax.add_patch(level2_scope_cir)
+def isConnected(graph):
+    # print graph
+    start = 'center'
+    visited = [start]
 
-    centroid_scope_cir = Circle(xy=(centroid1_x, centroid1_y), radius=3000, alpha=0.2)
-    ax.add_patch(centroid_scope_cir)
-    centroid_scope_cir = Circle(xy=(centroid2_x, centroid2_y), radius=3000, alpha=0.2)
-    ax.add_patch(centroid_scope_cir)
-    centroid_scope_cir = Circle(xy=(centroid3_x, centroid3_y), radius=3000, alpha=0.2)
-    ax.add_patch(centroid_scope_cir)
-    centroid_scope_cir = Circle(xy=(centroid4_x, centroid4_y), radius=3000, alpha=0.2)
-    ax.add_patch(centroid_scope_cir)
-    plt.show()
+    def dfs(start):
+        for next in graph[start]:
+            if next not in visited:
+                visited.append(next)
+                dfs(next)
 
-
+    dfs(start)
+    # print visited
+    return False if len(visited) < len(graph.keys()) else True
 
 def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, zone_y_dict, goods_x, goods_y, centroid_x, centroid_y):
     point_centroid_distance_dict = {i:((zone_x_dict[i]-centroid_x)**2 + (zone_y_dict[i]-centroid_y)**2)**0.5 for i in zone_point_list}
@@ -337,7 +407,7 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
             if get_one not in initial_plan:
                 initial_plan.append(get_one)
         try_num += 1
-        print try_num, initial_plan
+        # print try_num, initial_plan
     return initial_plan
 
 def isVaild(level2_list, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y):
@@ -394,3 +464,6 @@ def linear_programming(zone_point_list, level2_num, zone_min_decreod_dict, zone_
 
 if __name__ == '__main__':
     main()
+    # isConnected({'833': [], '830': [], 'center': ['811'], '818': [], '811': ['center'], '800': [], '814': []})
+
+    # hasLoop({'833': ['830'], '830': ['833'], 'center': ['811'], '818': ['811'], '811': ['center', '818', '800'], '800': ['811'], '814': []}, 'center','818')
