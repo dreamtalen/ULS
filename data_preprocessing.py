@@ -51,8 +51,13 @@ if __name__ == '__main__':
 
     sort_zone_decre_list = sorted(part_zone_list, key=lambda x: zone_min_decreod_dict[x], reverse=True)
 
-    for i in sort_zone_decre_list:
-        print i, zone_od_dict[i], zone_traffic_dict[i], zone_min_decreod_dict[i]
+    # for i in sort_zone_decre_list:
+    #     print i, zone_od_dict[i], zone_traffic_dict[i], zone_min_decreod_dict[i]
+
+    i = 880
+    print i, zone_od_dict[i], zone_traffic_dict[i], zone_min_decreod_dict[i], route_od_dict['3->880']+route_od_dict['880->3']+route_od_dict['1->880']+route_od_dict['880->1']+route_od_dict['2->880']+route_od_dict['880->2']+route_od_dict['4->880']+route_od_dict['880->4']
+
+
 
     origin_x = min(zone_x_dict.values())
     origin_y = min(zone_y_dict.values())
