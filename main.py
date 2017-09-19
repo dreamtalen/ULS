@@ -79,7 +79,22 @@ def main():
     max_decreod_need = max(zone_min_decreod_dict.values())
     fig, ax = plt.subplots()
     color = [str(1 - zone_min_decreod_dict[zone]/max_decreod_need) for zone in zone_list]
+    color = []
+    for zone in zone_list:
+        if zone in zone_1_list: color.append("red")
+        elif zone in zone_2_list: color.append("black")
+        elif zone in zone_3_list: color.append("orange")
+        elif zone in zone_4_list: color.append("blue")
+        else: color.append("yellow")
+
+
     ax.scatter([zone_x_dict[i] for i in zone_list], [zone_y_dict[i] for i in zone_list], c=color)
+
+
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_aspect(1)
+    # plt.show()
 
     one2zone_od_dict = {}
     for zone in zone_list:
@@ -111,25 +126,25 @@ def main():
 
     centroid1_x = sum(one2zone_od_dict[i]*zone_x_dict[i] for i in zone_1_list)/sum(one2zone_od_dict[i] for i in zone_1_list)
     centroid1_y = sum(one2zone_od_dict[i]*zone_y_dict[i] for i in zone_1_list)/sum(one2zone_od_dict[i] for i in zone_1_list)
-    print 'centroid 1', centroid1_x, centroid1_y
+    print 'centroid 1', centroid1_x+origin_x, centroid1_y+origin_y
     zone1_centroid_cir = Circle(xy=(centroid1_x, centroid1_y), radius=500, color='red')
     ax.add_patch(zone1_centroid_cir)
 
     centroid2_x = sum(two2zone_od_dict[i]*zone_x_dict[i] for i in zone_2_list)/sum(two2zone_od_dict[i] for i in zone_2_list)
     centroid2_y = sum(two2zone_od_dict[i]*zone_y_dict[i] for i in zone_2_list)/sum(two2zone_od_dict[i] for i in zone_2_list)
-    print 'centroid 2', centroid2_x, centroid2_y
+    print 'centroid 2', centroid2_x+origin_x, centroid2_y+origin_y
     zone2_centroid_cir = Circle(xy=(centroid2_x, centroid2_y), radius=500, color='red')
     ax.add_patch(zone2_centroid_cir)
 
     centroid3_x = sum(three2zone_od_dict[i]*zone_x_dict[i] for i in zone_3_list)/sum(three2zone_od_dict[i] for i in zone_3_list)
     centroid3_y = sum(three2zone_od_dict[i]*zone_y_dict[i] for i in zone_3_list)/sum(three2zone_od_dict[i] for i in zone_3_list)
-    print 'centroid 3', centroid3_x, centroid3_y
+    print 'centroid 3', centroid3_x+origin_x, centroid3_y+origin_y
     zone3_centroid_cir = Circle(xy=(centroid3_x, centroid3_y), radius=500, color='red')
     ax.add_patch(zone3_centroid_cir)
 
     centroid4_x = sum(four2zone_od_dict[i]*zone_x_dict[i] for i in zone_4_list)/sum(four2zone_od_dict[i] for i in zone_4_list)
     centroid4_y = sum(four2zone_od_dict[i]*zone_y_dict[i] for i in zone_4_list)/sum(four2zone_od_dict[i] for i in zone_4_list)
-    print 'centroid 4', centroid4_x, centroid4_y
+    print 'centroid 4', centroid4_x+origin_x, centroid4_y+origin_y
     zone4_centroid_cir = Circle(xy=(centroid4_x, centroid4_y), radius=500, color='red')
     ax.add_patch(zone4_centroid_cir)
 
@@ -138,13 +153,68 @@ def main():
     ax.set_aspect(1)
     # plt.show()
 
+    # time.sleep(1000)
     print 'zone 1 need decrease', sum(zone_min_decreod_dict[i] for i in zone_1_list)
     print 'zone 2 need decrease', sum(zone_min_decreod_dict[i] for i in zone_2_list)
     print 'zone 3 need decrease', sum(zone_min_decreod_dict[i] for i in zone_3_list)
     print 'zone 4 need decrease', sum(zone_min_decreod_dict[i] for i in zone_4_list)
 
+
+
     park_name_list = [1, 2, 3, 4]
-    # zone_1234_list_list = [zone_1_list, zone_2_list, zone_3_list, zone_4_list]
+    # # print len(zone_1_list), len(zone_2_list), len(zone_3_list), len(zone_4_list)
+    zone_1234_list_list = [zone_1_list, zone_2_list, zone_3_list, zone_4_list]
+
+    point_this_park_od_dict = {}
+    point_other_park_sumod_dict = {}
+
+    point_park_od_dict = {
+        str(point): {park:0 for park in park_name_list} for point in part_zone_list
+    }
+
+    for park, point_list in zip(park_name_list, zone_1234_list_list):
+        for point in point_list:
+            this_point_park_od_dict = {p:0 for p in park_name_list}
+            this_point_need = zone_min_decreod_dict[point]
+            for p in park_name_list:
+                if str(point) + '->' + str(p) in route_od_dict:
+                    this_point_park_od_dict[p] += route_od_dict[str(point) + '->' + str(p)]
+                if str(p) + '->' + str(point) in route_od_dict:
+                    this_point_park_od_dict[p] += route_od_dict[str(p) + '->' + str(point)]
+
+            # print park, point, this_point_need, this_point_park_od_dict
+
+            if this_point_need <= this_point_park_od_dict[park]:
+                point_park_od_dict[str(point)][park] = this_point_need
+            elif this_point_park_od_dict[park] < this_point_need <= sum([this_point_park_od_dict[p] for p in park_name_list]):
+                point_park_od_dict[str(point)][park] = this_point_park_od_dict[park]
+                sum_other_park_od = sum([this_point_park_od_dict[p] for p in park_name_list if p != park])
+                remain_need = this_point_need - this_point_park_od_dict[park]
+                for p in park_name_list:
+                    if p != park:
+                        point_park_od_dict[str(point)][p] = remain_need*this_point_park_od_dict[p]/sum_other_park_od
+            else:
+                for p in park_name_list:
+                    point_park_od_dict[str(point)][p] = this_point_park_od_dict[p]
+            # print point_park_od_dict[str(point)]
+
+    ################calculate transport rate
+    for park in park_name_list:
+        denominator = sum(point_park_od_dict[str(point)][park] for point in part_zone_list)
+        this_park_this_zone = sum(point_park_od_dict[str(point)][park] for point in zone_1234_list_list[park-1])
+        print park, (denominator - this_park_this_zone)/denominator
+    #
+    # for park, zone_list in zip(park_name_list, zone_1234_list_list):
+    #     sum_park_zone_list = 0
+    #     for zone in zone_list:
+    #         route_in = str(park) + '->' + str(zone)
+    #         if route_in in route_od_dict:
+    #             sum_park_zone_list += route_od_dict[route_in]
+    #         route_out = str(zone) + '->' + str(park)
+    #         if route_out in route_od_dict:
+    #             sum_park_zone_list += route_od_dict[route_out]
+    #     print park, sum_park_zone_list
+
     # for index, zone_n_list in enumerate(zone_1234_list_list):
     #     sum_zone_inout, sum_zone_park_inout, sum_zone_need_dec = 0, 0, 0
     #     for point in zone_n_list:
@@ -159,6 +229,8 @@ def main():
     #         sum_zone_need_dec += zone_min_decreod_dict[point]
     #     print str(index+1), sum_zone_park_inout, sum_zone_inout, sum_zone_need_dec
     #     print sum_zone_park_inout/sum_zone_inout
+
+    # zone_park_inout_ratio_dict = {}
     #
     # for point in part_zone_list:
     #     sum_zone_park_inout = 0
@@ -169,8 +241,34 @@ def main():
     #         route_out = str(point) + '->' + str(park)
     #         if route_out in route_od_dict:
     #             sum_zone_park_inout += route_od_dict[route_out]
-    #     print str(point), zone_input_dict[point] + zone_output_dict[point], sum_zone_park_inout, zone_min_decreod_dict[point]
-    #     print sum_zone_park_inout/(zone_input_dict[point] + zone_output_dict[point])
+    #     # print str(point), zone_input_dict[point] + zone_output_dict[point], sum_zone_park_inout, zone_min_decreod_dict[point]
+    #     zone_park_inout_ratio_dict[str(point)] = sum_zone_park_inout/(zone_input_dict[point] + zone_output_dict[point])
+    # # print zone_park_inout_ratio_dict
+    #
+    # point_other_zone_ratio_dict = {}
+    #
+    # point_list_sorted_park_inout_ratio = sorted(zone_park_inout_ratio_dict.keys(), key=lambda x: zone_park_inout_ratio_dict[x])
+    # for p in point_list_sorted_park_inout_ratio[:3]:
+    #     print p, zone_park_inout_ratio_dict[p]
+    #
+    # for p in [833, 834]:
+    #     sum_zone234 = 0
+    #     for end in zone_2_list+zone_3_list+zone_4_list:
+    #         if str(p) + '->' + str(end) in route_od_dict:
+    #             sum_zone234 += route_od_dict[str(p) + '->' + str(end)]
+    #         if str(end) + '->' + str(p) in route_od_dict:
+    #             sum_zone234 += route_od_dict[str(end) + '->' + str(p)]
+    #     print p, sum_zone234/(zone_input_dict[point] + zone_output_dict[point])
+    #
+    # for p in [835]:
+    #     sum_zone134 = 0
+    #     for end in zone_1_list+zone_3_list+zone_4_list:
+    #         if str(p) + '->' + str(end) in route_od_dict:
+    #             sum_zone134 += route_od_dict[str(p) + '->' + str(end)]
+    #         if str(end) + '->' + str(p) in route_od_dict:
+    #             sum_zone134 += route_od_dict[str(end) + '->' + str(p)]
+    #     print p, sum_zone134/(zone_input_dict[point] + zone_output_dict[point])
+
     # time.sleep(1000)
 
     # sum_zone_12 = 0
@@ -270,7 +368,7 @@ def main():
 
     # time.sleep(1000)
 
-    # level2_list = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
+    # level2_list, point_od_dict = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
     # for level2 in level2_list:
     #     level2_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=200, color='blue')
     #     ax.add_patch(level2_cir)
@@ -316,7 +414,61 @@ def main():
 # zone 2 [812, 805, 824, 829, 838]
 # zone 3 [893, 896, 898, 873, 870, 900, 891, 899, 876]
 # zone 4 [861, 868, 858, 844, 846]
-    minimize_total_length([830, 800, 833, 818, 811, 814], zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
+#     level2_list = [830, 800, 833, 818, 811, 814]
+
+    # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
+    # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
+
+    level2_list, point_od_dict, level2_service_list_dict = annealing(zone_2_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[2], zone_y_dict[2], centroid2_x, centroid2_y)
+    print 'zone 2', level2_list
+    print level2_service_list_dict
+    print point_od_dict
+    graph = minimize_total_length(level2_list, zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
+    # print graph
+    # point_od_dict = {str(i):3000 for i in level2_list}
+    # point_od_dict['center'] = 4000
+    edge_od_dict = calculate_edge_od(graph, point_od_dict, zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
+    print edge_od_dict
+    total_cost = 0
+    for edge, od in edge_od_dict.items():
+        start, end = edge.split('->')
+        if start != 'center':
+            start = int(start)
+            end = int(end)
+            if od <= 7200: total_cost += 3*distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
+            elif od <= 14400: total_cost += 3.5*distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
+            else: print 'Wrong', od
+        else:
+            end = int(end)
+            if od <= 7200: total_cost += 3*distance(centroid1_x, centroid1_y, zone_x_dict[end], zone_y_dict[end])
+            elif od <= 14400: total_cost += 3.5*distance(centroid1_x, centroid1_y, zone_x_dict[end], zone_y_dict[end])
+            else: print 'Wrong', od
+    print total_cost
+
+
+def calculate_edge_od(graph, point_od_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y):
+    point2father_od_dict = {}
+    visited = []
+    def dfs(point, visited, point2father_od_dict):
+        visited.append(point)
+        unvisited_next = [i for i in graph[point] if i not in visited]
+        if not unvisited_next:
+            point2father_od_dict[point] = point_od_dict[point]
+        else:
+            point2father_od_dict[point] = sum(dfs(next, visited, point2father_od_dict) for next in unvisited_next) + point_od_dict[point]
+        return point2father_od_dict[point]
+
+    dfs('center', visited, point2father_od_dict)
+    edge_od_dict = {}
+    visited = []
+    def dfs2(point, visited, edge_od_dict, point2father_od_dict):
+        visited.append(point)
+        for next in [i for i in graph[point] if i not in visited]:
+            edge_od_dict[point+'->'+next] = point2father_od_dict[next]
+            dfs2(next, visited, edge_od_dict, point2father_od_dict)
+    dfs2('center', visited, edge_od_dict, point2father_od_dict)
+    return edge_od_dict
+
 
 def distance(point1_x, point1_y, point2_x, point2_y):
     return ((point1_x-point2_x)**2 + (point1_y-point2_y)**2)**0.5
@@ -330,8 +482,8 @@ def minimize_total_length(level2_list,  zone_x_dict, zone_y_dict, centroid_x, ce
             if start != end and str(end)+'->'+str(start) not in edge_length_dict:
                 edge_length_dict[str(start)+'->'+str(end)] = distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
     edge_list = sorted(edge_length_dict.keys(), key=lambda x:edge_length_dict[x])
-    for e in edge_list:
-        print e, edge_length_dict[e]
+    # for e in edge_list:
+    #     print e, edge_length_dict[e]
     graph = {str(k):[] for k in level2_list+['center']}
     while not isConnected(graph) and edge_list:
         min_edge = edge_list[0]
@@ -380,6 +532,8 @@ def isConnected(graph):
     return False if len(visited) < len(graph.keys()) else True
 
 def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, zone_y_dict, goods_x, goods_y, centroid_x, centroid_y):
+    point_od_dict = {}
+    level2_service_list_dict = {}
     point_centroid_distance_dict = {i:((zone_x_dict[i]-centroid_x)**2 + (zone_y_dict[i]-centroid_y)**2)**0.5 for i in zone_point_list}
     sorted_point_list_accoring_centroid_distance = sorted(zone_point_list, key=lambda x: point_centroid_distance_dict[x])
     # for i in sorted_point_list_accoring_centroid_distance:
@@ -387,6 +541,10 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
     point_in_centroid_list = [i for i in sorted_point_list_accoring_centroid_distance if point_centroid_distance_dict[i] <= 3000]
     centroid_load = 4000
     while centroid_load and point_in_centroid_list:
+        if 'center' in level2_service_list_dict:
+            level2_service_list_dict['center'].append(point_in_centroid_list[0])
+        else:
+            level2_service_list_dict['center'] = [point_in_centroid_list[0]]
         if zone_min_decreod_dict[point_in_centroid_list[0]] <= centroid_load:
             centroid_load -= zone_min_decreod_dict[point_in_centroid_list[0]]
             zone_min_decreod_dict[point_in_centroid_list[0]] = 0
@@ -394,13 +552,15 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
         else:
             zone_min_decreod_dict[point_in_centroid_list[0]] -= centroid_load
             centroid_load = 0
+
     # for i in sorted_point_list_accoring_centroid_distance:
     #     print i, point_centroid_distance_dict[i], zone_min_decreod_dict[i]
     # print len(zone_point_list)
-
+    point_od_dict['center'] = 4000-centroid_load
     initial_plan = []
     try_num = 0
-    while not isVaild(initial_plan, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y):
+    while not isVaild(initial_plan, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x,
+                      centroid_y, point_od_dict, level2_service_list_dict):
         initial_plan = []
         while len(initial_plan) < level2_num:
             get_one = random.choice(zone_point_list)
@@ -408,13 +568,16 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
                 initial_plan.append(get_one)
         try_num += 1
         # print try_num, initial_plan
-    return initial_plan
+    return initial_plan, point_od_dict, level2_service_list_dict
 
-def isVaild(level2_list, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y):
+def isVaild(level2_list, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y,
+            point_od_dict, level2_service_list_dict):
     for i in zone_point_list:
         if not any([((zone_x_dict[i] - zone_x_dict[level2])**2 + (zone_y_dict[i] - zone_y_dict[level2])**2)**0.5 <= 3000 for level2 in level2_list] \
                    + [((zone_x_dict[i] - centroid_x)**2 + (zone_y_dict[i] - centroid_y)**2)**0.5 <= 3000]): return False
     zone_min_decreod_dict_local = zone_min_decreod_dict.copy()
+    point_od_dict_local = point_od_dict.copy()
+    level2_service_list_dict_local = level2_service_list_dict.copy()
     # for i in zone_point_list:
     #     print i, zone_min_decreod_dict_local[i]
     for level2 in level2_list:
@@ -423,6 +586,10 @@ def isVaild(level2_list, zone_point_list, zone_min_decreod_dict, zone_x_dict, zo
         point_in_level2_list = [i for i in sorted_point_list_accoring_level2_distance if point_level2_distance_dict[i] <= 3000]
         level2_load = 3000
         while level2_load and point_in_level2_list:
+            if str(level2) in level2_service_list_dict_local:
+                level2_service_list_dict_local[str(level2)].append(point_in_level2_list[0])
+            else:
+                level2_service_list_dict_local[str(level2)] = [point_in_level2_list[0]]
             if zone_min_decreod_dict_local[point_in_level2_list[0]] <= level2_load:
                 level2_load -= zone_min_decreod_dict_local[point_in_level2_list[0]]
                 zone_min_decreod_dict_local[point_in_level2_list[0]] = 0
@@ -430,9 +597,12 @@ def isVaild(level2_list, zone_point_list, zone_min_decreod_dict, zone_x_dict, zo
             else:
                 zone_min_decreod_dict_local[point_in_level2_list[0]] -= level2_load
                 level2_load = 0
+        point_od_dict_local[str(level2)] = 3000 - level2_load
     if any([zone_min_decreod_dict_local[i] for i in zone_point_list]): return False
     else:
         zone_min_decreod_dict.update(zone_min_decreod_dict_local)
+        point_od_dict.update(point_od_dict_local)
+        level2_service_list_dict.update(level2_service_list_dict_local)
     # for i in zone_point_list:
     #     print i, zone_min_decreod_dict_local[i]
     return True
