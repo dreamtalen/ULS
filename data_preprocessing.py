@@ -86,7 +86,7 @@ if __name__ == '__main__':
             if k == '2->'+str(zone):
                 two2zone_od_dict[zone] = v
     max_two2zone_od = max(two2zone_od_dict.values())
-    color = [str(1 - two2zone_od_dict[zone]/max_two2zone_od) for zone in zone_list]
+    # color = [str(1 - two2zone_od_dict[zone]/max_two2zone_od) for zone in zone_list]
 
     three2zone_od_dict = {}
     for zone in zone_list:
@@ -102,15 +102,15 @@ if __name__ == '__main__':
             if k == '4->'+str(zone):
                 four2zone_od_dict[zone] = v
     max_four2zone_od = max(four2zone_od_dict.values())
-    # color = [str(1 - four2zone_od_dict[zone]/max_four2zone_od) for zone in zone_list]
+    color = [str(1 - four2zone_od_dict[zone]/max_four2zone_od) for zone in zone_list]
 
     ax.scatter([zone_x_dict[i] for i in zone_list], [zone_y_dict[i] for i in zone_list], c=color)
 
     # cir1 = Circle(xy = (zone_x_dict[1], zone_y_dict[1]), radius=10000, alpha=0.2)
-    cir1 = Circle(xy = (zone_x_dict[2], zone_y_dict[2]), radius=13000, alpha=0.4)
+    # cir1 = Circle(xy = (zone_x_dict[2], zone_y_dict[2]), radius=13000, alpha=0.4)
     # cir1 = Circle(xy = (zone_x_dict[3], zone_y_dict[3]), radius=11000, alpha=0.4)
     # cir1 = Circle(xy = (zone_x_dict[4], zone_y_dict[4]), radius=14000, alpha=0.4)
-    ax.add_patch(cir1)
+    # ax.add_patch(cir1)
 
     # plt.show()
 
@@ -121,11 +121,11 @@ if __name__ == '__main__':
     # circle1_centroid_cir = Circle(xy=(circle1_centroid_x, circle1_centroid_y), radius=500, color='red')
     # ax.add_patch(circle1_centroid_cir)
 
-    in_circle2_zone_list = [zone for zone in zone_list if ((zone_x_dict[zone] - zone_x_dict[2])**2 + (zone_y_dict[zone] - zone_y_dict[2])**2)**0.5 <= 13000]
-    circle2_centroid_x = sum(two2zone_od_dict[i]*zone_x_dict[i] for i in in_circle2_zone_list)/sum(two2zone_od_dict[i] for i in in_circle2_zone_list)
-    circle2_centroid_y = sum(two2zone_od_dict[i]*zone_y_dict[i] for i in in_circle2_zone_list)/sum(two2zone_od_dict[i] for i in in_circle2_zone_list)
-    circle2_centroid_cir = Circle(xy=(circle2_centroid_x, circle2_centroid_y), radius=500, color='red')
-    ax.add_patch(circle2_centroid_cir)
+    # in_circle2_zone_list = [zone for zone in zone_list if ((zone_x_dict[zone] - zone_x_dict[2])**2 + (zone_y_dict[zone] - zone_y_dict[2])**2)**0.5 <= 13000]
+    # circle2_centroid_x = sum(two2zone_od_dict[i]*zone_x_dict[i] for i in in_circle2_zone_list)/sum(two2zone_od_dict[i] for i in in_circle2_zone_list)
+    # circle2_centroid_y = sum(two2zone_od_dict[i]*zone_y_dict[i] for i in in_circle2_zone_list)/sum(two2zone_od_dict[i] for i in in_circle2_zone_list)
+    # circle2_centroid_cir = Circle(xy=(circle2_centroid_x, circle2_centroid_y), radius=500, color='red')
+    # ax.add_patch(circle2_centroid_cir)
 
     # in_circle3_zone_list = [zone for zone in zone_list if ((zone_x_dict[zone] - zone_x_dict[3])**2 + (zone_y_dict[zone] - zone_y_dict[3])**2)**0.5 <= 11000]
     # circle3_centroid_x = sum(three2zone_od_dict[i]*zone_x_dict[i] for i in in_circle3_zone_list)/sum(three2zone_od_dict[i] for i in in_circle3_zone_list)

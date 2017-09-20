@@ -8,7 +8,7 @@ import time
 def main():
     wordbook = xlrd.open_workbook("input.xls")
     sheet1, sheet2 = wordbook._sheet_list
-    print sheet1.name,sheet1.nrows,sheet1.ncols
+    # print sheet1.name,sheet1.nrows,sheet1.ncols
     route_od_dict = {}
     zone_input_dict = {}
     zone_output_dict = {}
@@ -27,7 +27,7 @@ def main():
     zone_list = zone_input_dict.keys()
     sort_zone_list = sorted(zone_list, key=lambda x:zone_od_dict[x], reverse=True)
 
-    print sheet2.name,sheet2.nrows,sheet2.ncols
+    # print sheet2.name,sheet2.nrows,sheet2.ncols
     zone_areakm_dict, zone_aream_dict = {}, {}
     zone_x_dict, zone_y_dict = {}, {}
     zone_traffic_dict = {}
@@ -70,7 +70,7 @@ def main():
     for i in zone_list:
         zone_x_dict[i] = zone_x_dict[i] - origin_x
         zone_y_dict[i] = zone_y_dict[i] - origin_y
-    print "origin", origin_x, origin_y
+    # print "origin", origin_x, origin_y
 
     for i in range(1,5):
         zone_min_decreod_dict[i] = 0.0
@@ -79,21 +79,21 @@ def main():
     max_decreod_need = max(zone_min_decreod_dict.values())
     fig, ax = plt.subplots()
     color = [str(1 - zone_min_decreod_dict[zone]/max_decreod_need) for zone in zone_list]
-    color = []
-    for zone in zone_list:
-        if zone in zone_1_list: color.append("red")
-        elif zone in zone_2_list: color.append("black")
-        elif zone in zone_3_list: color.append("orange")
-        elif zone in zone_4_list: color.append("blue")
-        else: color.append("yellow")
+    # color = []
+    # for zone in zone_list:
+    #     if zone in zone_1_list: color.append("red")
+    #     elif zone in zone_2_list: color.append("black")
+    #     elif zone in zone_3_list: color.append("orange")
+    #     elif zone in zone_4_list: color.append("blue")
+    #     else: color.append("yellow")
 
 
     ax.scatter([zone_x_dict[i] for i in zone_list], [zone_y_dict[i] for i in zone_list], c=color)
 
 
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_aspect(1)
+    # ax.set_xlabel('x')
+    # ax.set_ylabel('y')
+    # ax.set_aspect(1)
     # plt.show()
 
     one2zone_od_dict = {}
@@ -126,40 +126,50 @@ def main():
 
     centroid1_x = sum(one2zone_od_dict[i]*zone_x_dict[i] for i in zone_1_list)/sum(one2zone_od_dict[i] for i in zone_1_list)
     centroid1_y = sum(one2zone_od_dict[i]*zone_y_dict[i] for i in zone_1_list)/sum(one2zone_od_dict[i] for i in zone_1_list)
-    print 'centroid 1', centroid1_x+origin_x, centroid1_y+origin_y
+    # print 'centroid 1', centroid1_x+origin_x, centroid1_y+origin_y
     zone1_centroid_cir = Circle(xy=(centroid1_x, centroid1_y), radius=500, color='red')
-    ax.add_patch(zone1_centroid_cir)
 
     centroid2_x = sum(two2zone_od_dict[i]*zone_x_dict[i] for i in zone_2_list)/sum(two2zone_od_dict[i] for i in zone_2_list)
     centroid2_y = sum(two2zone_od_dict[i]*zone_y_dict[i] for i in zone_2_list)/sum(two2zone_od_dict[i] for i in zone_2_list)
-    print 'centroid 2', centroid2_x+origin_x, centroid2_y+origin_y
+    # print 'centroid 2', centroid2_x+origin_x, centroid2_y+origin_y
     zone2_centroid_cir = Circle(xy=(centroid2_x, centroid2_y), radius=500, color='red')
-    ax.add_patch(zone2_centroid_cir)
 
     centroid3_x = sum(three2zone_od_dict[i]*zone_x_dict[i] for i in zone_3_list)/sum(three2zone_od_dict[i] for i in zone_3_list)
     centroid3_y = sum(three2zone_od_dict[i]*zone_y_dict[i] for i in zone_3_list)/sum(three2zone_od_dict[i] for i in zone_3_list)
-    print 'centroid 3', centroid3_x+origin_x, centroid3_y+origin_y
+    # print 'centroid 3', centroid3_x+origin_x, centroid3_y+origin_y
     zone3_centroid_cir = Circle(xy=(centroid3_x, centroid3_y), radius=500, color='red')
-    ax.add_patch(zone3_centroid_cir)
 
     centroid4_x = sum(four2zone_od_dict[i]*zone_x_dict[i] for i in zone_4_list)/sum(four2zone_od_dict[i] for i in zone_4_list)
     centroid4_y = sum(four2zone_od_dict[i]*zone_y_dict[i] for i in zone_4_list)/sum(four2zone_od_dict[i] for i in zone_4_list)
-    print 'centroid 4', centroid4_x+origin_x, centroid4_y+origin_y
+    # print 'centroid 4', centroid4_x+origin_x, centroid4_y+origin_y
     zone4_centroid_cir = Circle(xy=(centroid4_x, centroid4_y), radius=500, color='red')
+
+    ax.add_patch(zone1_centroid_cir)
+    ax.add_patch(zone2_centroid_cir)
+    ax.add_patch(zone3_centroid_cir)
     ax.add_patch(zone4_centroid_cir)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
     ax.set_aspect(1)
-    # plt.show()
 
     # time.sleep(1000)
-    print 'zone 1 need decrease', sum(zone_min_decreod_dict[i] for i in zone_1_list)
-    print 'zone 2 need decrease', sum(zone_min_decreod_dict[i] for i in zone_2_list)
-    print 'zone 3 need decrease', sum(zone_min_decreod_dict[i] for i in zone_3_list)
-    print 'zone 4 need decrease', sum(zone_min_decreod_dict[i] for i in zone_4_list)
+    # print 'zone 1 need decrease', sum(zone_min_decreod_dict[i] for i in zone_1_list)
+    # print 'zone 2 need decrease', sum(zone_min_decreod_dict[i] for i in zone_2_list)
+    # print 'zone 3 need decrease', sum(zone_min_decreod_dict[i] for i in zone_3_list)
+    # print 'zone 4 need decrease', sum(zone_min_decreod_dict[i] for i in zone_4_list)
+    #
+    level2_list_1 = [807, 801, 810, 820, 811, 818]
+    level2_list_2 = [826, 829, 824, 805, 832]
+    level2_list_3 = [896, 900, 888, 891, 897, 871, 884, 894, 876]
+    level2_list_4 = [829, 837, 826, 805, 832]
+
+    for level2 in level2_list_1 + level2_list_2 + level2_list_3 + level2_list_4:
+        add_cir = Circle(xy=(zone_x_dict[level2], zone_y_dict[level2]), radius=400, color='blue')
+        ax.add_patch(add_cir)
 
 
+    plt.show()
 
     park_name_list = [1, 2, 3, 4]
     # # print len(zone_1_list), len(zone_2_list), len(zone_3_list), len(zone_4_list)
@@ -202,7 +212,7 @@ def main():
     for park in park_name_list:
         denominator = sum(point_park_od_dict[str(point)][park] for point in part_zone_list)
         this_park_this_zone = sum(point_park_od_dict[str(point)][park] for point in zone_1234_list_list[park-1])
-        print park, (denominator - this_park_this_zone)/denominator
+        # print park, (denominator - this_park_this_zone)/denominator
     #
     # for park, zone_list in zip(park_name_list, zone_1234_list_list):
     #     sum_park_zone_list = 0
@@ -419,31 +429,52 @@ def main():
     # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
     # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_1_list, 6, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[1], zone_y_dict[1], centroid1_x, centroid1_y)
 
-    level2_list, point_od_dict, level2_service_list_dict = annealing(zone_2_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[2], zone_y_dict[2], centroid2_x, centroid2_y)
-    print 'zone 2', level2_list
-    print level2_service_list_dict
-    print point_od_dict
-    graph = minimize_total_length(level2_list, zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
+    level2_list, point_od_dict, level2_service_list_dict = annealing(zone_3_list, 9, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[3], zone_y_dict[3], centroid3_x, centroid3_y)
+    # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_4_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[4], zone_y_dict[4], centroid4_x, centroid4_y)
+
+    # level2_list, point_od_dict, level2_service_list_dict = annealing(zone_2_list, 5, zone_min_decreod_dict, zone_x_dict, zone_y_dict, zone_x_dict[2], zone_y_dict[2], centroid2_x, centroid2_y)
+    # print 'zone 4', level2_list
+    # print level2_service_list_dict
+    # print point_od_dict
+    # level2_list = [859, 863, 853, 858, 847]
+    graph = minimize_total_length(level2_list, zone_x_dict, zone_y_dict, centroid3_x, centroid3_y)
+    # print graph
+    # time.sleep(1000)
     # print graph
     # point_od_dict = {str(i):3000 for i in level2_list}
     # point_od_dict['center'] = 4000
-    edge_od_dict = calculate_edge_od(graph, point_od_dict, zone_x_dict, zone_y_dict, centroid1_x, centroid1_y)
-    print edge_od_dict
+    edge_od_dict = calculate_edge_od(graph, point_od_dict, zone_x_dict, zone_y_dict, centroid3_x, centroid3_y)
+    edge_length_dict = {}
+    # print edge_od_dict
     total_cost = 0
     for edge, od in edge_od_dict.items():
         start, end = edge.split('->')
         if start != 'center':
             start = int(start)
             end = int(end)
-            if od <= 7200: total_cost += 3*distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
-            elif od <= 14400: total_cost += 3.5*distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
-            else: print 'Wrong', od
+            length = distance(zone_x_dict[start], zone_y_dict[start], zone_x_dict[end], zone_y_dict[end])
+            edge_length_dict[edge] = length
+            if od <= 7200: total_cost += 3*length
+            elif od <= 14400: total_cost += 3.5*length
+            else:
+                print 'Wrong'
+                total_cost += 1000*length
         else:
             end = int(end)
-            if od <= 7200: total_cost += 3*distance(centroid1_x, centroid1_y, zone_x_dict[end], zone_y_dict[end])
-            elif od <= 14400: total_cost += 3.5*distance(centroid1_x, centroid1_y, zone_x_dict[end], zone_y_dict[end])
-            else: print 'Wrong', od
+            length = distance(centroid3_x, centroid3_y, zone_x_dict[end], zone_y_dict[end])
+            edge_length_dict[edge] = length
+            if od <= 7200: total_cost += 3*length
+            elif od <= 14400: total_cost += 3.5*length
+            else:
+                print 'Wrong'
+                total_cost += 1000*length
+
+    # print total_cost
+    total_cost = total_cost*100000000/1000/365/100 + sum(edge_length_dict[edge]*edge_od_dict[edge] for edge in edge_length_dict.keys())/1000
     print total_cost
+    # print edge_length_dict
+    # print edge_od_dict
+    return total_cost, level2_list, level2_service_list_dict, point_od_dict, edge_od_dict
 
 
 def calculate_edge_od(graph, point_od_dict, zone_x_dict, zone_y_dict, centroid_x, centroid_y):
@@ -488,7 +519,10 @@ def minimize_total_length(level2_list,  zone_x_dict, zone_y_dict, centroid_x, ce
     while not isConnected(graph) and edge_list:
         min_edge = edge_list[0]
         start, end = min_edge.split('->')
+        # print min_edge
+        # print graph
         if hasLoop(graph, start, end):
+            # print 'hasloop'
             edge_list.pop(0)
         else:
             edge_list.pop(0)
@@ -506,7 +540,7 @@ def hasloop_dfs(start, graph, edge_start, edge_end, visited):
                 return flag
             else:
                 visited.append(next)
-                flag = hasloop_dfs(next, graph, edge_start, edge_end, visited)
+                flag += hasloop_dfs(next, graph, edge_start, edge_end, visited)
     return flag
 
 def hasLoop(graph, edge_start, edge_end):
@@ -558,6 +592,7 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
     # print len(zone_point_list)
     point_od_dict['center'] = 4000-centroid_load
     initial_plan = []
+    # initial_plan = [859, 863, 853, 858, 847]
     try_num = 0
     while not isVaild(initial_plan, zone_point_list, zone_min_decreod_dict, zone_x_dict, zone_y_dict, centroid_x,
                       centroid_y, point_od_dict, level2_service_list_dict):
@@ -566,6 +601,7 @@ def annealing(zone_point_list, level2_num, zone_min_decreod_dict, zone_x_dict, z
             get_one = random.choice(zone_point_list)
             if get_one not in initial_plan:
                 initial_plan.append(get_one)
+        # initial_plan = [826, 824, 829, 803, 837]
         try_num += 1
         # print try_num, initial_plan
     return initial_plan, point_od_dict, level2_service_list_dict
@@ -636,4 +672,5 @@ if __name__ == '__main__':
     main()
     # isConnected({'833': [], '830': [], 'center': ['811'], '818': [], '811': ['center'], '800': [], '814': []})
 
-    # hasLoop({'833': ['830'], '830': ['833'], 'center': ['811'], '818': ['811'], '811': ['center', '818', '800'], '800': ['811'], '814': []}, 'center','818')
+    # graph = {'847': ['853'], 'center': ['859', '863'], '853': ['859', '847'], '863': ['center'], '858': [], '859': ['center', '853']}
+    # print hasLoop(graph, 'center','853')
